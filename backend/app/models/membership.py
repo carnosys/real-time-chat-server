@@ -1,0 +1,18 @@
+from datetime import datetime
+
+from sqlalchemy import DateTime, ForeignKey, func
+from sqlalchemy.orm import Mapped, mapped_column
+
+from app.database.Base import Base
+
+
+class RoomMembership(Base):
+    __tablename__ = "room_memberships"
+
+    room_id: Mapped[int] = mapped_column(ForeignKey("rooms.id"), primary_key=True)
+    user_id: Mapped[int] = mapped_column(ForeignKey("users.id"), primary_key=True)
+    joined_at: Mapped[datetime] = mapped_column(
+        DateTime(timezone=True),
+        server_default=func.now(),
+        nullable=False,
+    )
