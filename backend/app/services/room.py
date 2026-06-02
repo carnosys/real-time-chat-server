@@ -1,6 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.repositories import room_repository as repo
+from app.repositories import room as repo
 
 
 # -------------------------
