@@ -42,3 +42,27 @@ async def delete_user(
         room_id=room_id,
         user_id=user_id,
     )
+
+
+async def is_user_member(
+    db: AsyncSession,user_id: int,
+    room_id: int) -> bool:
+    membership = await repo.get_membership(db, room_id, user_id)
+    return membership is not None
+
+# -------------------------
+# LIST ROOM MEMBERS
+# -------------------------
+async def get_room_members(
+    db: AsyncSession,
+    room_id: int,
+    skip: int = 0,
+    limit: int = 100,
+):
+    return await repo.get_room_memberships(
+        db=db,
+        room_id=room_id,
+        skip=skip,
+        limit=limit,
+    )
+

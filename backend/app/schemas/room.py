@@ -7,7 +7,6 @@ from app.schemas.base import ORMBaseModel
 
 class RoomCreate(BaseModel):
     name: str
-    created_by: int
     is_private: bool = False
 
 

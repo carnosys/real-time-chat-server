@@ -36,7 +36,7 @@ class Config:
     POSTGRES_PORT: int = to_int("POSTGRES_PORT")
     POSTGRES_DB: str = required("POSTGRES_DB")
     POSTGRES_USER: str = required("POSTGRES_USER")
-    POSTGRES_PASSWORD: str = required("POSTGRES_USER")
+    POSTGRES_PASSWORD: str = required("POSTGRES_PASSWORD")
 
     #redis
     REDIS_HOST: str = required("REDIS_HOST")
@@ -45,9 +45,9 @@ class Config:
     REDIS_PASSWORD: str = required("REDIS_PASSWORD")
 
     #JWT
-    JWT_SECRET:str
-    TOKEN_EXPIRY_IN_MIN:str
-    HASHING_ALGORITHM: str
+    JWT_SECRET: str = required("JWT_SECRET")
+    TOKEN_EXPIRY_IN_MIN: int = to_int("TOKEN_EXPIRY_IN_MIN", 30)
+    HASHING_ALGORITHM: str = os.getenv("HASHING_ALGORITHM", "HS256")
 
     #logging
     LOG_LEVEL: str = os.getenv("LOG_LEVEL","DEBUG")
@@ -59,7 +59,7 @@ class Config:
     @property
     def get_postgres_url(self):
         return (
-             f"postgresql://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
+             f"postgresql+asyncpg://{self.POSTGRES_USER}:{self.POSTGRES_PASSWORD}"
             f"@{self.POSTGRES_HOST}:{self.POSTGRES_PORT}/{self.POSTGRES_DB}"
         )
     

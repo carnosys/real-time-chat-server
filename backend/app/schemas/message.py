@@ -22,4 +22,5 @@ class MessageRead(ORMBaseModel):
     sender_id: int
     content: str
     created_at: datetime
+    is_read: bool
     client_message_id: str

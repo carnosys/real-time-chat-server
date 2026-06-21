@@ -18,4 +18,6 @@ class Message(Base):
         server_default=func.now(),
         nullable=False,
     )
+    is_read: Mapped[bool] = mapped_column(default=False, nullable=False)
     client_message_id: Mapped[str] = mapped_column(String(255), nullable=False)
+

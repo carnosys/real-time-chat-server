@@ -4,5 +4,6 @@ sqlalchemy[asyncio]>=2.0
 asyncpg
 pydantic>=2.0
 PyJWT
-pwdlib
+pwdlib[argon2]
+python-multipart
 redis[hiredis]

@@ -1,5 +1,6 @@
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.repositories import membership as membership_repo
 from app.repositories import room as repo
 
 
@@ -12,12 +13,27 @@ async def create_room(
     created_by: int,
     is_private: bool = False,
 ):
-    return await repo.create_room(
+    room = await repo.create_room(
         db=db,
         name=name,
         created_by=created_by,
         is_private=is_private,
     )
+
+    existing_membership = await membership_repo.get_membership(
+        db=db,
+        room_id=room.id,
+        user_id=created_by,
+    )
+
+    if existing_membership is None:
+        await membership_repo.create_membership(
+            db=db,
+            room_id=room.id,
+            user_id=created_by,
+        )
+
+    return room
 
 
 # -------------------------

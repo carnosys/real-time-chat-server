@@ -83,6 +83,21 @@ async def update_message(
     return message
 
 
+async def update_message_read_status(
+    db: AsyncSession,
+    message_id: int,
+    is_read: bool,
+) -> Message | None:
+    message = await get_message(db, message_id)
+    if message is None:
+        return None
+
+    message.is_read = is_read
+    await db.commit()
+    await db.refresh(message)
+    return message
+
+
 async def delete_message(db: AsyncSession, message_id: int) -> bool:
     message = await get_message(db, message_id)
     if message is None:

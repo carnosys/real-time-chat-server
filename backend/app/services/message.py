@@ -4,6 +4,7 @@ from app.repositories.message import (
     create_message as repo_create_message,
     get_message as repo_get_message,
     update_message as repo_update_message,
+    update_message_read_status as repo_update_message_read_status,
     delete_message as repo_delete_message,
     get_room_messages as repo_get_room_messages,
 )
@@ -89,4 +90,21 @@ async def delete_message_service(
     return await repo_delete_message(
         db=db,
         message_id=message_id,
+    )
+
+
+async def update_message_read_status_service(
+    db: AsyncSession,
+    message_id: int,
+    is_read: bool,
+) -> Message | None:
+    message = await repo_get_message(db, message_id)
+
+    if message is None:
+        return None
+
+    return await repo_update_message_read_status(
+        db=db,
+        message_id=message_id,
+        is_read=is_read,
     )

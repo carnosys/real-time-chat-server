@@ -1,4 +1,3 @@
-from core.config import settings
 from typing import Optional 
 
 import jwt 
@@ -6,11 +5,11 @@ from jwt.exceptions import InvalidTokenError
 
 from fastapi.security import OAuth2PasswordBearer
 from pwdlib import PasswordHash
-from repositories import users as user_repo
-from db.session import get_db
-from fastapi import security, status, HTTPException
+from fastapi import status, HTTPException
 
 from datetime import datetime, timedelta, timezone
+
+from app.core.config import Settings
 
 password_hash = PasswordHash.recommended()
 
@@ -22,13 +21,13 @@ def hash_password(plaintext:str)->str:
 def verify_hashed_password(plaintext:str, hashed_password:str)->bool:
     return password_hash.verify(plaintext,hashed_password)
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/token")
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
 
 #JWT creation
 
 def create_access_token(subject: str, expires_delta: Optional[timedelta] = None) -> str:
     expire = datetime.now(timezone.utc) + (
-        expires_delta or timedelta(minutes=settings.ACCESS_TOKEN_EXPIRE_MINUTES)
+        expires_delta or timedelta(minutes=Settings.TOKEN_EXPIRY_IN_MIN)
     )
     payload = {
         "sub":subject,
@@ -37,7 +36,7 @@ def create_access_token(subject: str, expires_delta: Optional[timedelta] = None)
     }
 
     token = jwt.encode(
-        payload, algorithm=settings.JWT_ALGORITHM, key=settings.JWT_SECRET
+        payload, algorithm=Settings.HASHING_ALGORITHM, key=Settings.JWT_SECRET
     )
     return token
 
@@ -47,7 +46,7 @@ def create_access_token(subject: str, expires_delta: Optional[timedelta] = None)
 def decode_access_token(token: str):
     try:
         payload = jwt.decode(
-            token, key=settings.JWT_SECRET, algorithms=[settings.JWT_ALGORITHM]
+            token, key=Settings.JWT_SECRET, algorithms=[Settings.HASHING_ALGORITHM]
         )
         return payload
     except InvalidTokenError:

@@ -4,6 +4,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.models.user import User
 from app.repositories.user import create_user, get_user_by_email, get_user_by_username
+from core.security import hash_password, verify_hashed_password
 
 
 PASSWORD_PATTERN = re.compile(r"^[A-Za-z0-9@$!%*?&._-]+$")
@@ -46,24 +47,10 @@ async def register_user(
         db=db,
         display_name=display_name,
         username=username,
-        password=password,
+        password=hash_password(password),
         email=email,
     )
 
-
-async def login_by_username(
-    db: AsyncSession,
-    username: str,
-    password: str,
-) -> User | None:
-    user = await get_user_by_username(db, username)
-    if user is None:
-        return None
-
-    if user.password != password:
-        return None
-
-    return user
 
 
 async def login_by_email(
@@ -74,8 +61,7 @@ async def login_by_email(
     user = await get_user_by_email(db, email)
     if user is None:
         return None
-
-    if user.password != password:
+    if not verify_hashed_password(hash_password(password), user.password):
         return None
 
     return user
